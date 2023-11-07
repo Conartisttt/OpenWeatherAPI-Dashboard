@@ -1,0 +1,15 @@
+#search {
+    background-color: lightblue;
+}
+
+#current {
+    background-color: lightyellow;
+}
+
+#five-day {
+    background-color: orange;
+}
+
+.day {
+    background-color: lightgreen;
+}
