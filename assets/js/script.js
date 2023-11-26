@@ -12,7 +12,11 @@ searchBtn.addEventListener("click", goFetch);
 //OpenWeather API Key
 const apiKey = "d39f86ad504a22388ea2e540968ab6af";
 
+//Variable to store data to local storage
+const pastSearchArr = [];
+
 initialPageLoad();
+buildPriorSearches();
 
 //Browswer Location Fetch Geo & Call Weather
 function initialPageLoad() {
@@ -35,8 +39,10 @@ function initialPageLoad() {
 
 //Search Bar Fetch Geo & Call Weather
 function goFetch() {
+
     const inputBox = document.getElementById("input-box");
     const inputBoxVal = inputBox.value;
+    saveLocally(inputBoxVal);
     const geoAPI = `http://api.openweathermap.org/geo/1.0/direct?q=${inputBoxVal}&limit=1&appid=${apiKey}`;
     fetch(geoAPI)
         .then(function (response) {
@@ -52,6 +58,30 @@ function goFetch() {
         })
 
 }
+
+//Previous Search Fetch Geo & Call Weather
+function goFetchAgain(e) {
+    const inputBoxVal = e.target.textContent;
+    // const inputBox = document.getElementById("input-box");
+    // const inputBoxVal = inputBox.value;
+    //get value of button text and store into a variable in place of inputboxval
+
+    const geoAPI = `http://api.openweathermap.org/geo/1.0/direct?q=${inputBoxVal}&limit=1&appid=${apiKey}`;
+    fetch(geoAPI)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (locationData) {
+            if (locationData.length !== 0) {
+                console.log(locationData)
+                const lat = locationData[0].lat
+                const lon = locationData[0].lon
+                weatherFetch(lat, lon, locationData);
+            }
+        })
+
+}
+
 
 //Weather Data Fetch & call functions to build site
 function weatherFetch(latitude, longitude, geoData) {
@@ -93,7 +123,7 @@ const buildCurrentDay = (currentDayData, geoData) => {
     const iconEl = document.getElementById("icon").setAttribute("src", `http://openweathermap.org/img/w/${icon}.png`);
     const tempEl = document.getElementById("temperature").textContent = `Temperature: ${temperature}°F`;
     const humidEl = document.getElementById("humidity").textContent = `Humidity: ${humidity}%`;
-    const windEl = document.getElementById("wind-speed").textContent = `Wind Speed: ${wind} miles per hour`;
+    const windEl = document.getElementById("wind-speed").textContent = `Wind Speed: ${wind} mph`;
 }
 
 //Build five day portion of site
@@ -159,7 +189,7 @@ const buildFiveDay = fiveDayData => {
         humidEl.textContent = `Humidity: ${humidity}%`;
         uList.appendChild(humidEl);
         const windEl = document.createElement("li");
-        windEl.textContent = `Wind Speed: ${wind} miles per hour`;
+        windEl.textContent = `Wind Speed: ${wind} mph`;
         uList.appendChild(windEl);
 
         fiveDayDiv.appendChild(divCard);
@@ -167,9 +197,28 @@ const buildFiveDay = fiveDayData => {
     console.log(fiveDayArr);
 }
 
+//save past searches to an array and save to local storage
+function saveLocally(value) {
+    if (pastSearchArr.includes(value)) {
+        //move value to beginning of array
+    } else {
+        pastSearchArr.push(value);
+    }
 
-//TODO: ADD LOCAL STORAGE FUNCTIONALITY
+    localStorage.setItem("saved-searches", JSON.stringify(pastSearchArr));
+    buildPriorSearches();
+}
 
-
-
-
+//get data from local storage and create buttons for previous searches
+function buildPriorSearches() {
+    searchDiv.innerHTML = "";
+    const searchArray = JSON.parse(localStorage.getItem("saved-searches")) || [];
+    if (searchArray.length > 0) {
+        for (let i = 0; i < searchArray.length; i++) {
+            const button = document.createElement("button");
+            button.textContent = searchArray[i];
+            button.addEventListener("click", goFetchAgain);
+            searchDiv.appendChild(button);
+        }
+    }
+}
