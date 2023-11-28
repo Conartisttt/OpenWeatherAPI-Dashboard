@@ -2,23 +2,10 @@
 
 ## Description
 
-The purpose of the application is to allow users to 
-Current Day:
--city name
--date
--icon of weather
--temp
--humidity
--wind speed
+The purpose of the application is to allow travelers to see the weather outlook for multiple cities. On page load, weather data will load based on your current browser location. The current day will display the city name, state, country, current date, icon representing the current weather conditions, the temperature and the humidity. The five day forecast will display the date, an icon representing future weather conditions, temperature, wind speed, and himidity.
 
-Five Day:
--date
--icon of weather
--temperature
--wind speed
--humidity
 
-My deployed application can be found [here](insert link to site here)
+My deployed application can be found [here](https://conartisttt.github.io/OpenWeatherAPI-Dashboard/)
 
 ## Features
 
@@ -28,7 +15,9 @@ My deployed application can be found [here](insert link to site here)
 
 The following screenshots demonstrate the applications functionality:
 
-![Welcome Page](insert link to image here ./assets)
+![Homepage](./assets/images/main.png)
+![First Search](./assets/images/search1.png)
+![Second Search](./assets/images/search2.png)
 
 
 
