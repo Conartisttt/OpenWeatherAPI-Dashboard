@@ -13,7 +13,7 @@ searchBtn.addEventListener("click", goFetch);
 const apiKey = "d39f86ad504a22388ea2e540968ab6af";
 
 //Variable to store data to local storage
-const pastSearchArr = [];
+const pastSearchArr = JSON.parse(localStorage.getItem("saved-searches")) || [];
 
 initialPageLoad();
 buildPriorSearches();
@@ -24,7 +24,7 @@ function initialPageLoad() {
         navigator.geolocation.getCurrentPosition(function (position) {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            const reverseGeoAPI = `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=5&appid=${apiKey}`
+            const reverseGeoAPI = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=5&appid=${apiKey}`
             fetch(reverseGeoAPI)
                 .then(function (response) {
                     return response.json();
@@ -43,7 +43,7 @@ function goFetch() {
     const inputBox = document.getElementById("input-box");
     const inputBoxVal = inputBox.value;
     saveLocally(inputBoxVal);
-    const geoAPI = `http://api.openweathermap.org/geo/1.0/direct?q=${inputBoxVal}&limit=1&appid=${apiKey}`;
+    const geoAPI = `https://api.openweathermap.org/geo/1.0/direct?q=${inputBoxVal}&limit=1&appid=${apiKey}`;
     fetch(geoAPI)
         .then(function (response) {
             return response.json();
@@ -66,7 +66,7 @@ function goFetchAgain(e) {
     // const inputBoxVal = inputBox.value;
     //get value of button text and store into a variable in place of inputboxval
 
-    const geoAPI = `http://api.openweathermap.org/geo/1.0/direct?q=${inputBoxVal}&limit=1&appid=${apiKey}`;
+    const geoAPI = `https://api.openweathermap.org/geo/1.0/direct?q=${inputBoxVal}&limit=1&appid=${apiKey}`;
     fetch(geoAPI)
         .then(function (response) {
             return response.json();
@@ -85,7 +85,7 @@ function goFetchAgain(e) {
 
 //Weather Data Fetch & call functions to build site
 function weatherFetch(latitude, longitude, geoData) {
-    const fiveDayWeatherAPI = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
+    const fiveDayWeatherAPI = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
     const currentDayWeatherAPI = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`
     fetch(fiveDayWeatherAPI)
         .then(function (response) {
@@ -121,7 +121,7 @@ const buildCurrentDay = (currentDayData, geoData) => {
     const dateEl = document.getElementById("date").textContent = today;
     const descriptionEl = document.getElementById("description").textContent = description;
     const iconEl = document.getElementById("icon").setAttribute("src", `http://openweathermap.org/img/w/${icon}.png`);
-    const tempEl = document.getElementById("temperature").textContent = `Temperature: ${temperature}°F`;
+    const tempEl = document.getElementById("temperature").textContent = `Temp: ${temperature}°F`;
     const humidEl = document.getElementById("humidity").textContent = `Humidity: ${humidity}%`;
     const windEl = document.getElementById("wind-speed").textContent = `Wind Speed: ${wind} mph`;
 }
@@ -143,13 +143,14 @@ const buildFiveDay = fiveDayData => {
     //Create five day forecast cards
     for (let i = 0; i < fiveDayArr.length; i++) {
         const date = fiveDayArr[i].dt_txt;
+        const dateSlice = date.slice(5, 10)
         const icon = fiveDayArr[i].weather[0].icon;
         const temperature = fiveDayArr[i].main.temp;
         const wind = fiveDayArr[i].wind.speed;
         const humidity = fiveDayArr[i].main.humidity;
 
         const divCard = document.createElement("div");
-        divCard.classList.add("card", "column", "is-one-fifth", "is-full-mobile", "day");
+        divCard.classList.add("card", "column", "is-one-sixth", "is-full-mobile", "day", "mx-1");
 
         const divCardContent = document.createElement("div");
         divCardContent.classList.add("card-content");
@@ -166,7 +167,7 @@ const buildFiveDay = fiveDayData => {
         divMedia.appendChild(divMediaContent);
         const dateEl = document.createElement("p");
         dateEl.classList.add("title", "is-4");
-        dateEl.textContent = date;
+        dateEl.textContent = dateSlice;
         divMediaContent.appendChild(dateEl);
 
         const figure = document.createElement("figure");
@@ -183,7 +184,7 @@ const buildFiveDay = fiveDayData => {
         const uList = document.createElement("ul");
         divContent.appendChild(uList);
         const tempEl = document.createElement("li");
-        tempEl.textContent = `Temperature: ${temperature}°F`;
+        tempEl.textContent = `Temp: ${temperature}°F`;
         uList.appendChild(tempEl);
         const humidEl = document.createElement("li");
         humidEl.textContent = `Humidity: ${humidity}%`;
@@ -202,7 +203,7 @@ function saveLocally(value) {
     if (pastSearchArr.includes(value)) {
         //move value to beginning of array
     } else {
-        pastSearchArr.push(value);
+        pastSearchArr.unshift(value);
     }
 
     localStorage.setItem("saved-searches", JSON.stringify(pastSearchArr));
@@ -216,6 +217,7 @@ function buildPriorSearches() {
     if (searchArray.length > 0) {
         for (let i = 0; i < searchArray.length; i++) {
             const button = document.createElement("button");
+            button.classList.add("button", "is-warning", "is-rounded", "space");
             button.textContent = searchArray[i];
             button.addEventListener("click", goFetchAgain);
             searchDiv.appendChild(button);

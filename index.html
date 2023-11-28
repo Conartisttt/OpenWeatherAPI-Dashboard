@@ -10,13 +10,18 @@
 </head>
 
 <body>
+
+    <header>
+        <h1>Weather Dashboard</h1>
+    </header>
     <main class="is-mobile">
         <div class="columns is-flex is-flex-wrap-wrap">
 
             <div class="column is-one-quarter is-full-mobile">
-                <label for="input-box">Search</label>
+                <label class="gold" for="input-box">Search</label>
                 <input id="input-box" type="text">
-                <button id="search-button">Search</button>
+                <button id="search-button" class="button is-warning is-rounded">Search</button>
+                <p class="gold">Search History:</p>
                 <div id="search">
                     
                 </div>
@@ -58,7 +63,7 @@
 
 
                 <div id="five-day" class="column is-full is-full-mobile is-flex is-flex-wrap-wrap">
-                    <p>Not Currently Available</p>
+                    <p class="gold">Not Currently Available</p>
                 </div>
 
         </div>
